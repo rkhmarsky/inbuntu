@@ -1,0 +1,113 @@
+#General configuration
+d-i auto-install/enable boolean true
+d-i debconf/priority string critical
+d-i pkgsel/update-policy select none
+#Localization
+d-i debian-installer/locale string ru_RU.UTF-8
+d-i debian-installer/language string en
+d-i debian-installer/country string UA
+#d-i localechooser/supported-locales multiselect en_US.UTF-8, ru_RU.UTF-8, uk_UA.UTF-8
+d-i console-setup/ask_detect boolean false
+#hostname
+d-i netcfg/get_hostname string intime
+#HW clock
+d-i clock-setup/utc boolean true
+#time zone
+d-i time/zone string Europe/Kiev
+#Firmware load
+d-i hw-detect/load_firmware boolean true
+#Use a http proxy
+d-i mirror/http/proxy string
+#The Debian release to install
+d-i mirror/suite string bionic
+#user setup
+d-i passwd/user-fullname intime
+d-i passwd/username string intime
+#d-i passwd/user-password password user123
+#для генерации нового пароля используйте команду openssl passwd -1 -salt xyz
+d-i passwd/user-password-crypted password $1$xyz$SP8E8lFGn4ePK8VA4wVtk0
+#d-i passwd/user-password-again password user123
+d-i user-setup/allow-password-weak boolean true
+d-i user-setup/encrypt-home boolean false
+d-i live-installer/enable boolean false
+##Partitioning две решетки - lvm для сервера
+##d-i partman-auto/disk string /dev/sda
+##d-i partman-auto/method string lvm
+##d-i partman-lvm/device_remove_lvm boolean true
+##d-i partman-lvm/confirm boolean true
+##d-i partman-lvm/confirm_nooverwrite boolean true
+##d-i partman-auto-lvm/guided_size string max
+##d-i partman-auto/choose_recipe select atomic
+##d-i partman-partitioning/confirm_write_new_label boolean true
+##d-i partman/choose_partition select finish
+##d-i partman/confirm boolean true
+##d-i partman/confirm_nooverwrite boolean true
+#####d-i preseed/early_command string umount /media
+d-i partman/early_command string \
+   USBDEV=$(list-devices usb-partition | sed "s/\(.*\)./\1/");\
+   BOOTDEV=$(list-devices disk | grep -v "$USBDEV" | head -1);\
+   debconf-set partman-auto/disk $BOOTDEV;\
+   debconf-set grub-installer/bootdev $BOOTDEV; \
+   umount /media; \
+   exit 0
+d-i partman-auto/disk string /dev/sda
+d-i partman-auto/method string regular
+d-i partman-lvm/device_remove_lvm boolean true
+d-i partman-md/device_remove_md boolean true
+d-i partman-lvm/confirm boolean true
+d-i partman-lvm/confirm_nooverwrite boolean true
+d-i partman-auto/choose_recipe select unencrypted-install
+d-i partman-auto/expert_recipe string \
+        unencrypted-install :: \
+                1024 1024 1024 ext4 \
+                        $primary{ } $bootable{ } \
+                        method{ format } format{ } \
+                        use_filesystem{ } filesystem{ ext4 } \
+                        mountpoint{ /boot } \
+                . \
+                4048 4048 4048 linux-swap \
+                        $primary{ } \
+                        method{ swap } format{ } \
+                . \
+                17408 100000000000 -1 ext4 \
+                        $primary{ } \
+                        method{ format } format{ } \
+                        use_filesystem{ } filesystem{ ext4 } \
+                        mountpoint{ / } \         .
+d-i partman-md/confirm boolean true
+d-i partman-partitioning/confirm_write_new_label boolean true
+d-i partman/choose_partition select finish
+d-i partman/confirm boolean true
+d-i partman/confirm_nooverwrite boolean true
+#Software selection
+tasksel tasksel/first   multiselect minimal
+d-i pkgsel/include string\
+    lubuntu-core cups samba lubuntu-desktop mc htop openssh-server remmina sane
+d-i finish-install/reboot_in_progress no
+# During installations from serial console, the regular virtual consoles (VT1-VT6) are normally disabled in /etc/inittab.
+d-i finish-install/keep-consoles boolean true
+d-i preseed/late_command string\
+      mkdir /target/install;\
+      cp -R /cdrom/install/teamviewer_14.6.2452_amd64.deb /target/install/;\
+      cp -R /cdrom/install/nomachine_6.8.1_1_amd64.deb /target/install/;\
+      cp -R /cdrom/install/eps_intime_client.tar /target/install/;\
+      cp -R /cdrom/install/postinstall.sh /target/install/;\
+      rm /target/usr/share/lxpanel/profile/Lubuntu/panels/panel;\
+      rm /target/usr/share/lubuntu/lubuntu-default-wallpaper.*;\
+      cp -R /cdrom/install/lubuntu-default-wallpaper.* /target/usr/share/lubuntu/wallpapers/;\
+      cp -R /cdrom/install/panel /target/usr/share/lxpanel/profile/Lubuntu/panels/panel;\
+      cp -R /cdrom/install/link.tar /target/install/;\
+      cp -R /cdrom/install/policies.json /target/usr/lib/firefox/distribution/;\
+      cp -R /cdrom/install/10-autologin.conf /target/etc/lightdm/lightdm.conf.d/;\
+      cp -R /cdrom/install/msfonts.tar /target/install/;\
+      cp -R /cdrom/install/intime.key /target/install/;\
+      rm /target/etc/apt/sources.list;\
+      rm /target/etc/apt/apt.conf.d/51unattended-upgrades-custom;\
+      rm /target/etc/apt/apt.conf.d/50unattended-upgrades;\
+      rm /target/etc/apt/apt.conf.d/20auto-upgrades;\
+      cp -R /cdrom/install/sources.list /target/etc/apt/;\
+      cp -R /cdrom/install/51unattended-upgrades-custom/ /target/etc/apt/apt.conf.d/;\
+      cp -R /cdrom/install/50unattended-upgrades/ /target/etc/apt/apt.conf.d/;\
+      cp -R /cdrom/install/20auto-upgrades/ /target/etc/apt/apt.conf.d/;\
+      in-target /bin/bash /install/postinstall.sh
+d-i debian-installer/exit/halt boolean true

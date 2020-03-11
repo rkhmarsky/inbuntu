@@ -1,0 +1,36 @@
+{
+ "policies": {
+   "DisplayBookmarksToolbar": true,
+   "NoDefaultBookmarks": true,
+   "Bookmarks":[
+     {
+      "Title": "Alfresco",
+      "URL": "https://alfresco.intime.ua/share/page/context/mine/myfiles",
+      "Flavicon": "https://alfresco.intime.ua/flavicon.ico",
+      "Placement": "toolbar",
+      "Folder": ""
+     },
+     {
+      "Title": "Help",
+      "URL": "https://help.intime.ua/",
+      "Flavicon": "https://help.intime.ua/flavicon.ico",
+      "Placement": "toolbar",
+      "Folder": ""
+     }, 
+     {
+      "Title": "Zimbra",
+      "URL": "https://zmail.intime.ua/",
+      "Flavicon": "https://zmail.intime.ua/flavicon.ico",
+      "Placement": "toolbar",
+      "Folder": ""
+     }, 
+     {
+      "Title": "Yammmer",
+      "URL": "https://www.yammer.com/",
+      "Flavicon": "https://www.yammer.com/flavicon.ico",
+      "Placement": "toolbar",
+      "Folder": ""
+     } 
+]
+}
+}
