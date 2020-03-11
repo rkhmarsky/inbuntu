@@ -1,0 +1,11 @@
+# Ссылка на оригинальный ISO
+UPSTREAM='http://cdimage.ubuntu.com/lubuntu/releases/18.04/release/lubuntu-18.04-alternate-amd64.iso'
+
+# Файл, в который сохранять оригинальный ISO
+IMAGE='lubuntu-18.04-alternate-amd64.iso'
+
+# Файл, в который сохранять MBR из оригинального ISO
+MBR='mbr.bin'
+
+# Файл, в который сохранять кастомизированный ISO
+INTIME_IMAGE='custom.iso'
